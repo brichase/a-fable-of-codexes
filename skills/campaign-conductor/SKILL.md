@@ -5,7 +5,7 @@ license: MIT
 compatibility: Designed for Claude Code (uses the Agent and Workflow tools). OpenAI Codex CLI (github.com/openai/codex) is optional; without it, route all work to Claude agents.
 metadata:
   author: jvogan
-  version: "0.4.0"
+  version: "0.5.0"
 ---
 
 # Campaign Conductor
@@ -49,6 +49,12 @@ implementing directly. Doctrine: the campaign-conductor skill.
 
 This pointer frees the user from ever re-invoking this skill — every future
 session in the repo auto-discovers the campaign.
+
+Preflight the toolchain once at kickoff: codex present and logged in
+(`codex login status`), `gh` if CI gates will be used, and the project's
+verify command actually runs. Record what exists in preferences.md and
+route around what doesn't (see Claude-only fleets). Discovering a missing
+tool mid-wave costs the wave.
 
 ## Worker routing
 
@@ -187,6 +193,29 @@ at once.
 Claude workers (Agent tool or Workflow) accept mid-run steering — use
 SendMessage to redirect a running native agent instead of killing and
 respawning.
+
+## Claude-only fleets
+
+Everything above works without Codex: Opus and Sonnet workers fill the
+implementation role through the Agent tool and Workflow. The mapping:
+
+- Dispatch: background Agent-tool spawns, or Workflow `agent()` where
+  effort control matters. Briefs are unchanged — the same self-contained
+  contract and structured report.
+- Isolation: `isolation: 'worktree'` gives each writer its own worktree
+  and branch without manual `git worktree` setup; the fleet table works
+  the same.
+- Steering is native (SendMessage), so the resume/fork mechanics have no
+  equivalent to miss: redirect the running worker.
+- Squads become a Claude lead dispatching Claude leaves; the same depth,
+  namespace, and evidence rules apply.
+- Cross-model review loses its second model; substitute a fresh reviewer
+  agent that did not author the diff. Weaker than a different model,
+  still far better than self-review.
+
+The same substitution covers a mid-campaign codex outage (rate limit,
+expired login): route the rest of the wave to Claude workers and note the
+switch in LEARNINGS.md.
 
 ## Permissions
 
