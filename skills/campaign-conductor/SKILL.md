@@ -421,6 +421,10 @@ The conductor owns correctness.
 - Check in with the user at phase boundaries and on plan-changing surprises,
   rather than per task. The user delegated so they wouldn't have to
   supervise.
+- On "pause" or "stop": dispatch nothing new, let in-flight workers finish
+  and collect their reports (killing writers mid-commit loses work), update
+  CAMPAIGN.md status, and report where things stand. The campaign resumes
+  from the files.
 
 **Fold in feedback as it happens, and keep the files lean.** When the user
 corrects you or a dispatch goes sideways mid-session, record it in the same
