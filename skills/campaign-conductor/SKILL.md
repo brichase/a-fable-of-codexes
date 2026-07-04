@@ -5,7 +5,7 @@ license: MIT
 compatibility: Designed for Claude Code (uses the Agent and Workflow tools). OpenAI Codex CLI (github.com/openai/codex) is optional; without it, route all work to Claude agents.
 metadata:
   author: jvogan
-  version: "0.5.0"
+  version: "0.5.1"
 ---
 
 # Campaign Conductor
@@ -142,8 +142,10 @@ CODEX_HOME="$HOME/.codex-account2" codex exec --json --skip-git-repo-check \
   and instantiate from them; a repeated brief fix becomes a template edit.
 - Sandbox: `read-only` for analysis/review tasks, `workspace-write` for
   implementation. Never `danger-full-access` without the user asking.
-- Subscription-authenticated Codex accounts have no metered per-token cost —
-  fan out freely; with multiple accounts, split tasks across them.
+- Subscription-authenticated Codex accounts have no metered per-token cost,
+  but tiers differ: Pro sustains wide fan-out, while lower tiers carry
+  weekly limits that one large high-reasoning wave can exhaust. Size waves
+  to the account's tier; with multiple accounts, split tasks across them.
 - Size tasks to one sitting (~15–60 min of agent work) with a verifiable
   output. Bigger than that, split it; the orchestrator owns sequencing.
 

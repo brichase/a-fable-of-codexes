@@ -125,7 +125,8 @@ the campaign automatically. Direct it in plain language:
 - **OpenAI Codex CLI** ([github.com/openai/codex](https://github.com/openai/codex)).
   Install with `npm install -g @openai/codex` (or `brew install codex`), then
   run `codex login` with a ChatGPT account. Subscription auth gives flat-rate
-  workers, which makes wide fan-out economical. Set the worker model and
+  workers; wide fan-out assumes a Pro-tier plan, since lower tiers carry
+  weekly limits. Set the worker model and
   reasoning effort in `~/.codex/config.toml`:
 
   ```toml
