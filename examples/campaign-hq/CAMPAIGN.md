@@ -18,8 +18,8 @@ Status: phase 2 of 3 — index pipeline merged; UI and highlighting in flight.
 - [ ] Index size budget check in CI (< 250 KB gzipped) — worker: codex — verify: CI green on PR
 
 ## Fleet (active dispatches)
-| Task | Worker | Branch | Worktree | Status |
-|---|---|---|---|---|
-| Search palette | opus | campaign/palette | ../wt-palette | in progress |
-| Result highlighting | codex | campaign/highlight | ../wt-highlight | dispatched 14:05 |
-| Ranking engine | codex | campaign/ranking | — | merged, verified, worktree removed |
+| Task | Worker | Branch | Worktree | Session | Dispatched | Status |
+|---|---|---|---|---|---|---|
+| Search palette | opus | campaign/palette | ../wt-palette | agent:palette | 13:58 | in progress |
+| Result highlighting | codex | campaign/highlight | ../wt-highlight | 019826f3-…-8b2c | 14:05 | running, ~30 min expected |
+| Ranking engine | codex | campaign/ranking | — | 0197f1aa-…-42d1 | 11:20 | merged, verified, worktree removed |

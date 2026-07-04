@@ -5,7 +5,7 @@ license: MIT
 compatibility: Designed for Claude Code (uses the Agent and Workflow tools). OpenAI Codex CLI (github.com/openai/codex) is optional; without it, route all work to Claude agents.
 metadata:
   author: jvogan
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Campaign Conductor
@@ -125,15 +125,46 @@ CODEX_HOME="$HOME/.codex-account2" codex exec --json --skip-git-repo-check \
   verification bandwidth when the wave lands. Ten or more concurrent workers
   is routine for read-only analysis; hold writer waves to the verifiable cap
   in the waves section below.
-- Write each brief to a file (`briefs/<task>.md`) rather than inlining it in
-  the loop; briefs are reviewable, reusable on retry, and keep the dispatch
-  command short.
+- Write each brief to a file (`docs/campaign-hq/briefs/<task>.md`) rather
+  than inlining it in the loop; briefs are reviewable, reusable on retry, and
+  keep the dispatch command short (`codex exec ... - < briefs/<task>.md`
+  reads the brief from stdin). Keep proven brief shapes per task type there
+  and instantiate from them; a repeated brief fix becomes a template edit.
 - Sandbox: `read-only` for analysis/review tasks, `workspace-write` for
   implementation. Never `danger-full-access` without the user asking.
 - Subscription-authenticated Codex accounts have no metered per-token cost —
   fan out freely; with multiple accounts, split tasks across them.
 - Size tasks to one sitting (~15–60 min of agent work) with a verifiable
   output. Bigger than that, split it; the orchestrator owns sequencing.
+
+### Codex worker capabilities
+
+Codex workers carry more than code editing; route these into campaigns:
+
+| Capability | Invocation | Campaign use |
+|---|---|---|
+| Model + effort per call | `-m gpt-5.4-mini -c model_reasoning_effort=low` | tiering, below |
+| Structured report | `--output-schema schemas/worker-result.json` | machine-checkable collection |
+| Live web search | `--search` | read-only research scouts for volatile facts: framework APIs, advisories, current versions |
+| Image input | `-i current.png -i target.png` | UI fixes from screenshots and mocks; visual bug reproduction |
+| Image generation | prompt the built-in `image_gen` tool | asset generation; the tool saves under `~/.codex/generated_images/<session>/`, so the brief must tell the worker to copy the file into the repo and verify it exists |
+| Review mode | `codex exec review --base <ref>` (read-only) | cross-model review gates; post-integration regression sweeps |
+| Session continuation | `codex exec resume <session-id> "<correction>"` | steering, below |
+
+Tier workers per call, leaving the user's config untouched: mechanical edits
+and summaries → `-m gpt-5.4-mini -c model_reasoning_effort=low`; standard
+implementation → config defaults; architecture, hard debugging, and judging →
+highest effort. A frontier model on rote edits wastes wall clock; a cheap
+model on a high-risk task produces rework.
+
+**Steering.** A finished codex session resumes with its context intact:
+`codex exec resume <session-id> "<correction>"`. Capture each worker's
+session id from the `--json` event stream at dispatch and record it in the
+fleet table. Resume when the output is mostly right (missed convention, one
+failing test) — the worker keeps its established model of the branch.
+Redispatch from zero when the approach itself was wrong. `codex fork
+<session-id>` explores an alternative from the same context without
+disturbing the original.
 
 OpenAI also ships a Codex plugin for Claude Code —
 <https://github.com/openai/codex-plugin-cc> — adding `/codex:review`,
@@ -177,6 +208,10 @@ Fleet hygiene:
   tells you what exists, but nothing about purpose or status.
 - Remove worktrees (`git worktree remove`) and delete merged branches after
   integration; stale worktrees produce misleading `git status` output later.
+- Record dispatch time and expected duration in the fleet table. A worker
+  whose output file is still empty past ~3x its expected duration is stalled:
+  kill it, inspect its worktree, then resume or redispatch. One stuck leaf
+  otherwise blocks collection for the whole wave.
 
 **Route integration like any other work.** Merging N branches involves real
 judgment calls:
@@ -202,13 +237,99 @@ genuinely independent tasks like per-module migrations). Analysis/review
 workers are read-only and don't count against the cap — fan those out as wide
 as useful.
 
+While verifying wave N — serial conductor work during which writers idle —
+dispatch the wave N+1 tasks whose base does not depend on N's outcome.
+Anything downstream of a task that might fail waits.
+
+## Squads: nested delegation
+
+A squad is one Claude subagent (Opus or Sonnet) acting as squad lead: it
+dispatches its own codex workers via `codex exec`, integrates their branches,
+verifies the integrated result, and returns one structured report. The squad
+absorbs the intermediate integration and per-worker diff reads that would
+otherwise land in the conductor's context.
+
+Dispatch a squad when a phase contains a cohesive sub-goal of **three or more
+codex tasks that must integrate with each other** before the conductor needs
+the result, or when verification is expensive enough (long suite, domain
+harness) that it should run once at the sub-goal boundary. For independent
+tasks that land directly on the main line, use flat dispatch; without
+intermediate integration a squad only adds a report seam.
+
+Rules, each preventing a specific failure:
+
+- **Depth caps at two.** Conductor → squad lead → codex leaves. A squad lead
+  dispatches codex workers only and never spawns another Claude agent; codex
+  workers cannot spawn at all. State this in every squad-lead brief, with a
+  hard cap on concurrent leaves. Uncapped depth is how orchestration
+  fork-bombs.
+- **Namespaces are exclusive.** The conductor assigns each squad a prefix:
+  integration branch `campaign/<squad>`, leaf branches
+  `campaign/<squad>/<subtask>`, worktrees `../wt-<squad>-<subtask>`. The
+  brief forbids branches or paths outside the prefix. Concurrent squads with
+  disjoint prefixes cannot cross-contaminate worktree state.
+- **Verification splits at the seam.** The squad lead runs the integrated
+  verify command in its worktree before reporting; the conductor re-runs it
+  when merging the squad's integration branch to the main line. The squad
+  never merges to main; the conductor never dispatches into a squad's
+  namespace.
+- **One fleet-table row per squad** (`squad:opus (4 codex)`), tracking the
+  integration branch. The squad keeps its own sub-table for its leaves;
+  tracking leaves at the conductor level cancels the context savings that
+  justified the squad.
+- **Reports enumerate every leaf** with status and evidence (commit sha,
+  verify output tail). Reject a squad report that claims success without
+  per-leaf evidence.
+- **Squads live one wave.** Branch all concurrent squads from the same
+  integrated base and merge them in the same wave. The brief requires the
+  squad to remove its leaf worktrees before reporting and to list any it
+  could not remove; sweep for the squad's prefix afterward as the second
+  net.
+
+The squad-lead brief carries: sub-goal and file boundary (including what
+sibling squads own), base commit, namespace prefix, the decomposition or
+explicit authority to decompose, the leaf cap, the verify command, the
+stop-at-integration-branch rule, worktree cleanup, and the report schema.
+Squad leads orchestrate; they may resolve a small merge conflict inline and
+must not write feature code.
+
+## Worker reports and review gates
+
+**Structured reports.** Every brief ends by requiring a fixed-schema report:
+`status`, `branch`, `commit`, `files_changed`, `verify_cmd`, `verify_result`
+(pass/fail plus output tail), `blockers`. Codex workers: pass
+`--output-schema` with the schema file. Claude workers: require a fenced JSON
+block as the final message. Collection then means parsing records instead of
+reading prose, and a missing `verify_result` mechanically marks a task
+incomplete. Keep the schema in `docs/campaign-hq/schemas/`.
+
+**Cross-model review.** The reviewing model catches what the author's model
+cannot see in itself. After a codex worker lands a high-risk diff (auth, data
+migration, shared state), dispatch a Claude reviewer; after a Claude worker
+lands one, run `codex exec review --base <ref>` read-only against the
+branch. After each wave's integration, a cheap-tier codex review of the
+merged result catches semantic conflicts that appear only after individually
+valid branches combine. Keep author and reviewer separate in every gate: the
+agent that changed the code never supplies the only evidence that it works.
+
+**Bake-offs.** For a high-stakes task with uncertain solution shape (tricky
+algorithm, design-sensitive component), dispatch the identical brief to two
+workers in separate worktrees — codex vs opus, or the two codex accounts —
+and have a judge pick against criteria written into the brief before
+dispatch, correctness first. Give the judge artifacts (diffs, verify output,
+screenshots) rather than the workers' own summaries. A bake-off costs double
+the worker spend plus a judge; reserve it for tasks where rework would cost
+more.
+
 ## Verify, record, check in
 
 The conductor owns correctness.
 
 - After each worker returns: read the diff, run the verification command from
-  the brief (tests, build, lint). A CAMPAIGN.md task is done when you have
-  verified it, not when the worker reports success.
+  the brief (tests, build, lint). Treat every worker report as a claim to
+  check; mark a CAMPAIGN.md task done only after your own verification run
+  passes. Re-verify at every seam — after each merge to the main line and
+  after each squad hands back its integration branch.
 - Log every dispatch outcome in LEARNINGS.md — one line minimum: date, task,
   worker, result, lesson. The lessons compound: "codex ignored our import
   ordering; add it to briefs" saves every subsequent dispatch. This file is
@@ -252,8 +373,8 @@ Status: <phase N of M — one line>
 - [ ] <task> — worker: <routing> — verify: <command>
 
 ## Fleet (active dispatches)
-| Task | Worker | Branch | Worktree | Status |
-|---|---|---|---|---|
+| Task | Worker | Branch | Worktree | Session | Dispatched | Status |
+|---|---|---|---|---|---|---|
 ```
 
 `LEARNINGS.md`
