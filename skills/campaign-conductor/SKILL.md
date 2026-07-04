@@ -5,7 +5,7 @@ license: MIT
 compatibility: Designed for Claude Code (uses the Agent and Workflow tools). OpenAI Codex CLI (github.com/openai/codex) is optional; without it, route all work to Claude agents.
 metadata:
   author: jvogan
-  version: "0.3.0"
+  version: "0.4.0"
 ---
 
 # Campaign Conductor
@@ -187,6 +187,31 @@ Claude workers (Agent tool or Workflow) accept mid-run steering — use
 SendMessage to redirect a running native agent instead of killing and
 respawning.
 
+## Permissions
+
+Workers need their full power for the whole wave — a permission prompt
+raised mid-run stalls that worker and everything downstream of it. Default
+to a powerful envelope, state it in one line at kickoff, record it in
+preferences.md, and tighten it only when the user asks (regulated repo,
+production credentials, offline requirement).
+
+The default envelope:
+
+- **Codex: `workspace-write` with network on and approvals off.** The
+  sandbox covers implementation including commits inside linked worktrees,
+  but codex ships it with network disabled (DNS fails inside the sandbox)
+  and `codex exec` cannot answer approval prompts. Dispatch with
+  `-c sandbox_workspace_write.network_access=true -c approval_policy=never`
+  (or set both in `~/.codex/config.toml` once) so workers can install
+  dependencies and never stall. Use `read-only` for scouts and reviewers;
+  `danger-full-access` when the user asks for it.
+- **Claude workers: edits pre-accepted.** They inherit the session's
+  permission mode, and in approve-as-you-go mode a background worker blocks
+  at its first prompt — the wave silently loses a member. Run campaign
+  sessions with edits pre-accepted or an allowlist covering the build and
+  verify commands; the Agent tool's `mode` parameter adjusts the envelope
+  per spawn.
+
 ## Parallel fleets: isolation, integration, waves
 
 One writer in the tree at a time is the invariant. How you keep it depends on
@@ -343,6 +368,10 @@ The conductor owns correctness.
   worker, result, lesson. The lessons compound: "codex ignored our import
   ordering; add it to briefs" saves every subsequent dispatch. This file is
   the campaign's memory; future sessions read it instead of rediscovering.
+- Where the project has CI, push worker branches and read the check results
+  (`gh pr checks`, `gh run list`) as a second verification layer — CI runs
+  the full matrix without occupying conductor context. Still run the
+  decisive suite yourself before merging to the main line.
 - Update task status in CAMPAIGN.md as you go, so a cold session can resume
   from the file alone.
 - Check in with the user at phase boundaries and on plan-changing surprises,
@@ -402,4 +431,6 @@ Status: <phase N of M — one line>
 - Implementation, tests, research: codex CLI, highest reasoning
 - Quick search: native subagents
 - Check-in cadence: phase boundaries
+- Permission envelope: codex workspace-write, network on for dependency
+  tasks; claude workers with edits pre-accepted
 ```

@@ -6,3 +6,4 @@
 - Quick search: native subagents
 - Integration: opus for UI-adjacent merges, codex for mechanical merges
 - Check-in cadence: phase boundaries; ping immediately if the index size budget fails
+- Permission envelope: codex workspace-write with network on (npm installs); claude workers with edits pre-accepted

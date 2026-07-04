@@ -46,12 +46,44 @@ Runs a project as an orchestrated campaign.
 - **Worker capabilities.** Doctrine covers Codex web search for research
   scouts, image input for UI fixes from screenshots, native image generation
   for assets, and review mode.
+- **Permissions.** The worker power envelope is set once at kickoff and
+  recorded — Codex sandbox level, network access, Claude permission mode —
+  so no wave stalls on a mid-run prompt.
 - **Compounding memory.** Every dispatch outcome and user correction is
   logged, then compacted into standing rules so the files stay cheap to read
   at session start.
 
 [`examples/campaign-hq/`](examples/campaign-hq/) shows the state files
 mid-campaign, including a worked worker brief and the report schema.
+
+### The fleet
+
+```mermaid
+flowchart TD
+    U[User] -->|goals, preferences| C[Claude conductor]
+    C -->|design brief| O[Opus agent<br>UI/UX]
+    C -->|implementation briefs| X1[Codex worker]
+    C --> X2[Codex worker]
+    C --> X3[Codex worker]
+    C -->|sub-goal brief| S[Squad lead: Opus]
+    S --> Y1[Codex leaf]
+    S --> Y2[Codex leaf]
+    S --> Y3[Codex leaf]
+    O & X1 & X2 & X3 -->|branch + report| I[Integrate · review · verify]
+    S -->|integration branch + report| I
+    I --> M[(main)]
+```
+
+Campaign state lives in the project, so any later session resumes it:
+
+```
+docs/campaign-hq/
+├── CAMPAIGN.md      plan, phases, fleet table
+├── LEARNINGS.md     standing rules + dispatch log
+├── preferences.md   worker routing, permission envelope
+├── briefs/          one file per dispatch
+└── schemas/         worker-result.json
+```
 
 ### How a campaign runs
 
