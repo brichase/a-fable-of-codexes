@@ -57,20 +57,11 @@ Runs a project as an orchestrated campaign.
 [`examples/campaign-hq/`](examples/campaign-hq/) shows the state files
 mid-campaign, including a worked worker brief and the report schema.
 
-### The fleet
+### Orchestration patterns
 
-```mermaid
-flowchart TD
-    U[User] -->|goals, preferences| C[Claude conductor]
-    C -->|design brief| O[Opus agent · UI/UX]
-    C -->|implementation briefs| W[Codex workers · N in parallel]
-    C -->|sub-goal brief| S[Squad lead · Opus]
-    S --> L[Codex leaves · N in parallel]
-    O --> I[Integrate · review · verify]
-    W --> I
-    S -->|integration branch| I
-    I --> M[(main)]
-```
+<p align="center">
+  <img src="assets/patterns.svg" alt="Six orchestration patterns: flat fan-out, route by work, squad, waves, cross-model review, bake-off" width="920">
+</p>
 
 Squads nest the fan-out: each Opus squad lead dispatches its own parallel
 Codex workers, integrates their branches, and hands the conductor one
@@ -99,18 +90,6 @@ docs/campaign-hq/
 ├── preferences.md   worker routing, permission envelope
 ├── briefs/          one file per dispatch
 └── schemas/         worker-result.json
-```
-
-### How a campaign runs
-
-```mermaid
-flowchart TD
-    A[Survey and plan] --> B[Dispatch wave: worktree + branch per worker]
-    B --> C[Collect structured reports]
-    C --> D[Integrate branches]
-    D --> E[Verify integrated result]
-    E -->|next wave| B
-    E -->|phases done| F[Campaign complete]
 ```
 
 ## Install

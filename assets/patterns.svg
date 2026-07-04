@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1980 1200" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8 z" fill="#1a1a1a"/></marker>
+    <marker id="ao" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8 z" fill="#e2694e"/></marker>
+    <marker id="ag" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8 z" fill="#b3b3b3"/></marker>
+    <marker id="as" markerWidth="9" markerHeight="8" refX="1" refY="4" orient="auto"><path d="M9,0 L0,4 L9,8 z" fill="#1a1a1a"/></marker>
+  </defs>
+  <rect width="1980" height="1200" fill="#faf7f0"/>
+  <text x="66" y="88" font-size="46" font-weight="700" fill="#1a1a1a">Six orchestration patterns</text>
+  <text x="66" y="124" font-size="22" fill="#8a8a8a">campaign-conductor: Fable conducts, Opus designs and leads squads, Codex workers implement</text>
+
+  <!-- ============ PANEL TEMPLATE: 600x430 ============ -->
+
+  <!-- P1 Flat fan-out -->
+  <g transform="translate(60,170)">
+    <rect width="600" height="430" fill="#ffffff" stroke="#ddd8d0"/>
+    <rect x="30" y="26" width="36" height="36" fill="#e2694e"/><text x="48" y="51" font-size="22" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+    <text x="84" y="52" font-size="26" font-weight="700" fill="#1a1a1a">Flat fan-out</text>
+    <line x1="30" y1="86" x2="570" y2="86" stroke="#ddd8d0"/>
+    <rect x="40" y="218" width="92" height="44" rx="8" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <text x="86" y="246" font-size="19" fill="#1a1a1a" text-anchor="middle">briefs</text>
+    <circle cx="228" cy="240" r="24" fill="#e2694e"/>
+    <text x="228" y="290" font-size="18" fill="#8a8a8a" text-anchor="middle">conductor</text>
+    <line x1="132" y1="240" x2="197" y2="240" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <circle cx="430" cy="130" r="20" fill="#1e2a4a"/>
+    <circle cx="430" cy="200" r="20" fill="#1e2a4a"/>
+    <circle cx="430" cy="270" r="20" fill="#1e2a4a"/>
+    <circle cx="430" cy="340" r="20" fill="#1e2a4a"/>
+    <line x1="250" y1="230" x2="404" y2="136" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="252" y1="236" x2="404" y2="202" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="252" y1="246" x2="404" y2="266" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="250" y1="252" x2="404" y2="334" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <text x="466" y="200" font-size="18" fill="#8a8a8a">codex workers,</text>
+    <text x="466" y="224" font-size="18" fill="#8a8a8a">one worktree</text>
+    <text x="466" y="248" font-size="18" fill="#8a8a8a">each</text>
+  </g>
+
+  <!-- P2 Route by work -->
+  <g transform="translate(690,170)">
+    <rect width="600" height="430" fill="#ffffff" stroke="#ddd8d0"/>
+    <rect x="30" y="26" width="36" height="36" fill="#e2694e"/><text x="48" y="51" font-size="22" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+    <text x="84" y="52" font-size="26" font-weight="700" fill="#1a1a1a">Route by work</text>
+    <line x1="30" y1="86" x2="570" y2="86" stroke="#ddd8d0"/>
+    <rect x="40" y="218" width="92" height="44" rx="8" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <text x="86" y="246" font-size="19" fill="#1a1a1a" text-anchor="middle">task</text>
+    <path d="M230,200 L272,240 L230,280 L188,240 z" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <text x="230" y="315" font-size="17" fill="#8a8a8a" text-anchor="middle">conductor routes</text>
+    <line x1="132" y1="240" x2="182" y2="240" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <circle cx="390" cy="140" r="20" fill="none" stroke="#e2694e" stroke-width="3"/>
+    <circle cx="390" cy="240" r="20" fill="#1e2a4a"/>
+    <circle cx="390" cy="340" r="20" fill="none" stroke="#b3b3b3" stroke-width="2.5"/>
+    <line x1="252" y1="222" x2="366" y2="152" stroke="#e2694e" stroke-width="3" marker-end="url(#ao)"/>
+    <line x1="272" y1="240" x2="364" y2="240" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="252" y1="258" x2="366" y2="328" stroke="#b3b3b3" stroke-width="2" marker-end="url(#ag)"/>
+    <text x="422" y="146" font-size="18" fill="#e2694e">opus · UI/UX</text>
+    <text x="422" y="246" font-size="18" fill="#8a8a8a">codex · implement</text>
+    <text x="422" y="346" font-size="18" fill="#8a8a8a">native · search</text>
+  </g>
+
+  <!-- P3 Squad -->
+  <g transform="translate(1320,170)">
+    <rect width="600" height="430" fill="#ffffff" stroke="#ddd8d0"/>
+    <rect x="30" y="26" width="36" height="36" fill="#e2694e"/><text x="48" y="51" font-size="22" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+    <text x="84" y="52" font-size="26" font-weight="700" fill="#1a1a1a">Squad</text>
+    <line x1="30" y1="86" x2="570" y2="86" stroke="#ddd8d0"/>
+    <circle cx="80" cy="240" r="24" fill="#e2694e"/>
+    <text x="80" y="290" font-size="18" fill="#8a8a8a" text-anchor="middle">conductor</text>
+    <circle cx="225" cy="240" r="22" fill="none" stroke="#e2694e" stroke-width="3"/>
+    <text x="225" y="290" font-size="18" fill="#8a8a8a" text-anchor="middle">opus lead</text>
+    <line x1="104" y1="240" x2="197" y2="240" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <circle cx="370" cy="150" r="18" fill="#1e2a4a"/>
+    <circle cx="370" cy="240" r="18" fill="#1e2a4a"/>
+    <circle cx="370" cy="330" r="18" fill="#1e2a4a"/>
+    <line x1="243" y1="228" x2="348" y2="158" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="247" y1="240" x2="346" y2="240" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="243" y1="252" x2="348" y2="322" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="438" y="140" width="9" height="200" fill="#e2694e"/>
+    <line x1="388" y1="152" x2="432" y2="180" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="388" y1="240" x2="432" y2="240" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="388" y1="328" x2="432" y2="300" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="447" y1="240" x2="500" y2="240" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <text x="512" y="222" font-size="18" fill="#8a8a8a">one</text>
+    <text x="512" y="246" font-size="18" fill="#8a8a8a">verified</text>
+    <text x="512" y="270" font-size="18" fill="#8a8a8a">branch</text>
+    <text x="370" y="385" font-size="17" fill="#8a8a8a" text-anchor="middle">codex leaves, own namespace</text>
+  </g>
+
+  <!-- P4 Waves -->
+  <g transform="translate(60,640)">
+    <rect width="600" height="430" fill="#ffffff" stroke="#ddd8d0"/>
+    <rect x="30" y="26" width="36" height="36" fill="#e2694e"/><text x="48" y="51" font-size="22" font-weight="700" fill="#fff" text-anchor="middle">4</text>
+    <text x="84" y="52" font-size="26" font-weight="700" fill="#1a1a1a">Waves</text>
+    <line x1="30" y1="86" x2="570" y2="86" stroke="#ddd8d0"/>
+    <circle cx="95" cy="260" r="26" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <circle cx="225" cy="260" r="26" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <circle cx="355" cy="260" r="26" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <text x="95" y="316" font-size="17" fill="#8a8a8a" text-anchor="middle">dispatch</text>
+    <text x="225" y="316" font-size="17" fill="#8a8a8a" text-anchor="middle">collect</text>
+    <text x="355" y="316" font-size="17" fill="#8a8a8a" text-anchor="middle">integrate</text>
+    <line x1="121" y1="260" x2="193" y2="260" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="251" y1="260" x2="323" y2="260" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <path d="M448,224 L484,260 L448,296 L412,260 z" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <text x="448" y="316" font-size="17" fill="#8a8a8a" text-anchor="middle">verified?</text>
+    <line x1="381" y1="260" x2="406" y2="260" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="525" y="246" width="28" height="28" fill="#1a1a1a"/>
+    <text x="539" y="316" font-size="17" fill="#8a8a8a" text-anchor="middle">done</text>
+    <line x1="484" y1="260" x2="519" y2="260" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <path d="M448,222 C 420,130 150,130 98,228" fill="none" stroke="#e2694e" stroke-width="3" marker-end="url(#ao)"/>
+    <text x="273" y="150" font-size="19" fill="#e2694e" text-anchor="middle">next wave, from the integrated base</text>
+  </g>
+
+  <!-- P5 Cross-model review -->
+  <g transform="translate(690,640)">
+    <rect width="600" height="430" fill="#ffffff" stroke="#ddd8d0"/>
+    <rect x="30" y="26" width="36" height="36" fill="#e2694e"/><text x="48" y="51" font-size="22" font-weight="700" fill="#fff" text-anchor="middle">5</text>
+    <text x="84" y="52" font-size="26" font-weight="700" fill="#1a1a1a">Cross-model review</text>
+    <line x1="30" y1="86" x2="570" y2="86" stroke="#ddd8d0"/>
+    <circle cx="140" cy="245" r="24" fill="#1e2a4a"/>
+    <text x="140" y="298" font-size="18" fill="#8a8a8a" text-anchor="middle">codex author</text>
+    <rect x="255" y="223" width="80" height="44" rx="8" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <text x="295" y="251" font-size="19" fill="#1a1a1a" text-anchor="middle">diff</text>
+    <line x1="164" y1="245" x2="249" y2="245" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <circle cx="470" cy="170" r="22" fill="none" stroke="#e2694e" stroke-width="3"/>
+    <circle cx="470" cy="320" r="22" fill="none" stroke="#e2694e" stroke-width="3"/>
+    <line x1="335" y1="230" x2="444" y2="180" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="335" y1="260" x2="444" y2="310" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <text x="470" y="128" font-size="18" fill="#e2694e" text-anchor="middle">opus reviewers</text>
+    <text x="300" y="385" font-size="17" fill="#8a8a8a" text-anchor="middle">the other model reviews; author never self-certifies</text>
+  </g>
+
+  <!-- P6 Bake-off -->
+  <g transform="translate(1320,640)">
+    <rect width="600" height="430" fill="#ffffff" stroke="#ddd8d0"/>
+    <rect x="30" y="26" width="36" height="36" fill="#e2694e"/><text x="48" y="51" font-size="22" font-weight="700" fill="#fff" text-anchor="middle">6</text>
+    <text x="84" y="52" font-size="26" font-weight="700" fill="#1a1a1a">Bake-off</text>
+    <line x1="30" y1="86" x2="570" y2="86" stroke="#ddd8d0"/>
+    <circle cx="110" cy="170" r="22" fill="#1e2a4a"/>
+    <circle cx="110" cy="320" r="22" fill="none" stroke="#e2694e" stroke-width="3"/>
+    <text x="110" y="222" font-size="17" fill="#8a8a8a" text-anchor="middle">same brief</text>
+    <text x="110" y="372" font-size="17" fill="#8a8a8a" text-anchor="middle">same brief</text>
+    <path d="M300,205 L340,245 L300,285 L260,245 z" fill="none" stroke="#e2694e" stroke-width="3"/>
+    <text x="300" y="318" font-size="17" fill="#8a8a8a" text-anchor="middle">judge, on artifacts</text>
+    <line x1="130" y1="182" x2="270" y2="230" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <line x1="130" y1="308" x2="270" y2="260" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="430" y="180" width="128" height="44" rx="8" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <text x="494" y="208" font-size="19" fill="#1a1a1a" text-anchor="middle">winner merges</text>
+    <line x1="340" y1="235" x2="424" y2="205" stroke="#1a1a1a" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="430" y="280" width="128" height="44" rx="8" fill="none" stroke="#b3b3b3" stroke-width="2" stroke-dasharray="6,5"/>
+    <text x="494" y="308" font-size="19" fill="#b3b3b3" text-anchor="middle">discarded</text>
+    <line x1="340" y1="255" x2="424" y2="290" stroke="#b3b3b3" stroke-width="2" stroke-dasharray="6,5" marker-end="url(#ag)"/>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(66,1128)">
+    <circle cx="12" cy="0" r="12" fill="#e2694e"/><text x="34" y="7" font-size="20" fill="#555">Fable conductor</text>
+    <circle cx="232" cy="0" r="12" fill="none" stroke="#e2694e" stroke-width="3"/><text x="254" y="7" font-size="20" fill="#555">Claude Opus agent</text>
+    <circle cx="482" cy="0" r="12" fill="#1e2a4a"/><text x="504" y="7" font-size="20" fill="#555">Codex worker</text>
+  </g>
+</svg>
