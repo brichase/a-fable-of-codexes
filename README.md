@@ -1,66 +1,83 @@
+<p align="center">
+  <img src="assets/banner.png" alt="An origami fox conducting an orchestra of open books" width="760">
+</p>
+
 # A Fable of Codexes
 
-Claude Code skills for orchestrating a **mixed fleet of AI workers** — Claude
-as the conductor, dispatching Claude (Opus) agents for design judgment and
-OpenAI Codex CLI workers for implementation, in parallel, with git-worktree
-isolation and wave-based integration.
+Claude Code skills for orchestrating mixed fleets of AI workers. Claude runs
+the project as conductor: it surveys and plans, dispatches Claude (Opus)
+agents for design judgment and OpenAI Codex CLI workers for implementation —
+many in parallel — then integrates and verifies what comes back.
 
 ## Skills
 
-### campaign-conductor
+### [campaign-conductor](skills/campaign-conductor/SKILL.md)
 
-Turns Claude into a project orchestrator rather than an implementer. On first
-use in a repo it bootstraps a `docs/campaign-hq/` folder (plan, learnings,
-worker-routing preferences) and adds a pointer to the project's CLAUDE.md — so
-every future session auto-discovers the campaign without the skill ever
-loading again.
+Runs a project as an orchestrated campaign.
 
-What it encodes:
+- **Bootstrap.** First use in a repo creates `docs/campaign-hq/` —
+  `CAMPAIGN.md` (plan and fleet table), `LEARNINGS.md` (distilled lessons),
+  `preferences.md` (worker routing) — and adds a pointer to the project's
+  CLAUDE.md. Every later session auto-discovers the campaign from the repo;
+  the skill loads once per project.
+- **Routing.** Opus for UI/UX and design judgment; Codex workers for
+  implementation, tests, and research; native subagents for quick searches.
+  Stated preferences are written to `preferences.md` and persist across
+  sessions.
+- **Campaign sizing.** Small projects get a directly written plan. Large or
+  unfamiliar ones get a parallel survey fan-out that drafts the plan for
+  sign-off first.
+- **Parallel fleets.** One writer per tree: git worktree and branch per
+  worker, a fleet table tracking every dispatch, integration handled as its
+  own dispatched task, and big campaigns structured as waves — dispatch,
+  collect, integrate, verify.
+- **Compounding memory.** Every dispatch outcome and user correction is
+  logged, then compacted into standing rules so the files stay cheap to read
+  at session start.
 
-- **Conductor doctrine** — Claude surveys, plans, dispatches, verifies, and
-  records; workers implement. Context is spent on orchestration, not code.
-- **Worker routing** — Opus for UI/UX and design judgment, Codex CLI workers
-  for implementation/tests/research, native subagents for quick searches.
-  Defaults live in an editable `preferences.md`; user overrides persist.
-- **Campaign sizing** — small projects get a lightweight plan; large or
-  unfamiliar ones get a parallel survey fan-out that writes the plan first.
-- **Parallel fleets** — one-writer-per-tree invariant, git worktree + branch
-  per worker, a fleet-tracking table, and dedicated *integration workers* to
-  merge parallel output. Big campaigns run as waves: dispatch → collect →
-  integrate → verify → repeat.
-- **Compounding memory** — every dispatch outcome and piece of user feedback
-  is logged, then periodically compacted into standing rules so the files
-  stay cheap to read.
+[`examples/campaign-hq/`](examples/campaign-hq/) shows the state files
+mid-campaign.
 
 ## Install
 
-Official installer:
-
 ```bash
-npx skills add <your-gh-org>/a-fable-of-codexes --skill campaign-conductor
+npx skills add jvogan/a-fable-of-codexes --skill campaign-conductor
 ```
 
-Manual:
+or manually:
 
 ```bash
-git clone --depth 1 https://github.com/<your-gh-org>/a-fable-of-codexes.git /tmp/afoc
+git clone --depth 1 https://github.com/jvogan/a-fable-of-codexes.git /tmp/afoc
 cp -r /tmp/afoc/skills/campaign-conductor ~/.claude/skills/
 ```
 
 ## Requirements
 
-- **Claude Code** (the skill uses the Agent and Workflow tools).
-- **OpenAI Codex CLI** (`codex`), authenticated — a ChatGPT subscription login
-  gives flat-rate workers, which is what makes wide fan-out economical. The
-  skill degrades gracefully without it: routing just falls back to Claude
-  agents for everything.
+- **Claude Code.** The skill uses the Agent and Workflow tools.
+- **OpenAI Codex CLI** — [github.com/openai/codex](https://github.com/openai/codex).
+  Install with `npm install -g @openai/codex` (or `brew install codex`), then
+  run `codex login` with a ChatGPT account. Subscription auth gives flat-rate
+  workers, which is what makes wide fan-out economical. Set the worker model
+  and reasoning effort in `~/.codex/config.toml`:
 
-## Customization
+  ```toml
+  model = "gpt-5.5"
+  model_reasoning_effort = "xhigh"
+  ```
 
-The skill's defaults (Opus for design, Codex for the rest) are starting
-points, not doctrine. Tell your Claude your preferences in plain language —
-"use Sonnet for tests", "no Codex on this repo" — and it records them in the
-project's `preferences.md`, where they persist across sessions.
+  Without Codex installed, the skill routes all work to Claude agents.
+
+## Validation
+
+```bash
+python3 scripts/validate.py
+```
+
+Checks every skill against the
+[Agent Skills spec](https://agentskills.io/specification) — frontmatter
+fields, name format, description length — plus this repo's 500-line body
+limit and relative-link integrity. CI runs the same script on every push and
+pull request.
 
 ## License
 
