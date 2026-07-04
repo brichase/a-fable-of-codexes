@@ -143,7 +143,7 @@ Codex workers carry more than code editing; route these into campaigns:
 
 | Capability | Invocation | Campaign use |
 |---|---|---|
-| Model + effort per call | `-m gpt-5.4-mini -c model_reasoning_effort=low` | tiering, below |
+| Model + effort per call | `-m <model> -c model_reasoning_effort=<level>` | effort policy, below |
 | Structured report | `--output-schema schemas/worker-result.json` | machine-checkable collection |
 | Live web search | `--search` | read-only research scouts for volatile facts: framework APIs, advisories, current versions |
 | Image input | `-i current.png -i target.png` | UI fixes from screenshots and mocks; visual bug reproduction |
@@ -151,11 +151,16 @@ Codex workers carry more than code editing; route these into campaigns:
 | Review mode | `codex exec review --base <ref>` (read-only) | cross-model review gates; post-integration regression sweeps |
 | Session continuation | `codex exec resume <session-id> "<correction>"` | steering, below |
 
-Tier workers per call, leaving the user's config untouched: mechanical edits
-and summaries → `-m gpt-5.4-mini -c model_reasoning_effort=low`; standard
-implementation → config defaults; architecture, hard debugging, and judging →
-highest effort. A frontier model on rote edits wastes wall clock; a cheap
-model on a high-risk task produces rework.
+Default every worker to the strongest configuration: Claude workers at high
+effort, codex workers at the strongest model and reasoning the user's config
+provides (e.g. gpt-5.5 at xhigh). Subscription auth prices strong and cheap
+workers identically, so a downgrade buys latency only, and a cheap model on
+a real task produces rework. Downshift a task type
+(`-m gpt-5.4-mini -c model_reasoning_effort=low`) only when the user asks
+for it or preferences.md records it; record any such request in
+preferences.md in the same turn so it persists. Architecture, debugging, and
+judging always run at highest effort. Per-call flags leave the user's config
+untouched.
 
 **Steering.** A finished codex session resumes with its context intact:
 `codex exec resume <session-id> "<correction>"`. Capture each worker's
@@ -307,9 +312,9 @@ incomplete. Keep the schema in `docs/campaign-hq/schemas/`.
 cannot see in itself. After a codex worker lands a high-risk diff (auth, data
 migration, shared state), dispatch a Claude reviewer; after a Claude worker
 lands one, run `codex exec review --base <ref>` read-only against the
-branch. After each wave's integration, a cheap-tier codex review of the
-merged result catches semantic conflicts that appear only after individually
-valid branches combine. Keep author and reviewer separate in every gate: the
+branch. After each wave's integration, a codex review of the merged result
+catches semantic conflicts that appear only after individually valid
+branches combine. Keep author and reviewer separate in every gate: the
 agent that changed the code never supplies the only evidence that it works.
 
 **Bake-offs.** For a high-stakes task with uncertain solution shape (tricky
