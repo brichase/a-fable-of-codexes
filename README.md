@@ -22,15 +22,26 @@ Runs a project as an orchestrated campaign.
   the skill loads once per project.
 - **Routing.** Opus for UI/UX and design judgment; Codex workers for
   implementation, tests, and research; native subagents for quick searches.
-  Stated preferences are written to `preferences.md` and persist across
-  sessions.
+  Every worker defaults to the strongest configured model and reasoning;
+  downshifts happen only on user preference. Stated preferences are written
+  to `preferences.md` and persist across sessions.
 - **Campaign sizing.** Small projects get a directly written plan. Large or
   unfamiliar ones get a parallel survey fan-out that drafts the plan for
   sign-off first.
 - **Parallel fleets.** One writer per tree: git worktree and branch per
-  worker, a fleet table tracking every dispatch, integration handled as its
-  own dispatched task, and big campaigns structured as waves — dispatch,
-  collect, integrate, verify.
+  worker, a fleet table tracking every dispatch with its session id,
+  integration handled as its own dispatched task, and big campaigns
+  structured as waves — dispatch, collect, integrate, verify. Finished Codex
+  sessions resume with context intact for incremental corrections.
+- **Squads.** For cohesive sub-goals, a Claude squad lead dispatches its own
+  Codex workers, integrates, verifies, and returns one branch — depth-capped,
+  namespace-isolated, with per-leaf evidence required in its report.
+- **Review gates.** Fixed-schema worker reports, cross-model review (Claude
+  reviews Codex diffs and Codex reviews Claude's), and same-brief bake-offs
+  judged on artifacts for high-stakes tasks.
+- **Worker capabilities.** Doctrine covers Codex web search for research
+  scouts, image input for UI fixes from screenshots, native image generation
+  for assets, and review mode.
 - **Compounding memory.** Every dispatch outcome and user correction is
   logged, then compacted into standing rules so the files stay cheap to read
   at session start.

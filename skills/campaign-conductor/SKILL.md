@@ -34,6 +34,9 @@ three files (skeletons at the bottom of this document):
 - `LEARNINGS.md` — running log of outcomes, worker quirks, decisions
 - `preferences.md` — the worker-routing table for this project
 
+`briefs/` and `schemas/` grow under the same folder from the first dispatch
+that needs them.
+
 Then add this block to the project's CLAUDE.md (create the file if missing):
 
 ```markdown
@@ -92,12 +95,13 @@ documented at <https://github.com/openai/codex>. A ChatGPT subscription login
 gives flat-rate workers, which makes wide fan-out economical. If the user has
 no Codex CLI, route implementation work to Claude agents instead.
 
-Codex workers are **fire-and-collect**: no mid-run steering, no follow-up
-questions. That constraint dictates the brief. Every dispatch must be
-self-contained: goal, relevant files/dirs, constraints and conventions to
-follow, how the worker should verify its own work (command to run), and what
-to put in the final message. If you can't write that brief, the task isn't
-scoped yet — scope it first.
+Codex workers are **fire-and-collect**: while a run is in flight there is no
+steering and no follow-up questions (a finished session can be resumed with
+corrections — see Steering below). That constraint dictates the brief. Every
+dispatch must be self-contained: goal, relevant files/dirs, constraints and
+conventions to follow, how the worker should verify its own work (command to
+run), and what to put in the final message. If you can't write that brief,
+the task isn't scoped yet — scope it first.
 
 ```bash
 # one worker: run in background Bash, collect out.txt on exit
@@ -111,7 +115,7 @@ for task in palette highlight ranking budget; do
   git -C <repo> worktree add "../wt-$task" -b "campaign/$task"
   codex exec --json --skip-git-repo-check -s workspace-write \
     -C "<repo>/../wt-$task" -o "/tmp/out-$task.txt" \
-    "$(cat "briefs/$task.md")" &
+    - < "docs/campaign-hq/briefs/$task.md" &
 done
 wait
 
@@ -144,7 +148,7 @@ Codex workers carry more than code editing; route these into campaigns:
 | Capability | Invocation | Campaign use |
 |---|---|---|
 | Model + effort per call | `-m <model> -c model_reasoning_effort=<level>` | effort policy, below |
-| Structured report | `--output-schema schemas/worker-result.json` | machine-checkable collection |
+| Structured report | `--output-schema docs/campaign-hq/schemas/worker-result.json` | machine-checkable collection |
 | Live web search | `--search` | read-only research scouts for volatile facts: framework APIs, advisories, current versions |
 | Image input | `-i current.png -i target.png` | UI fixes from screenshots and mocks; visual bug reproduction |
 | Image generation | prompt the built-in `image_gen` tool | asset generation; the tool saves under `~/.codex/generated_images/<session>/`, so the brief must tell the worker to copy the file into the repo and verify it exists |
@@ -207,10 +211,10 @@ Fleet hygiene:
   brief for a worktree worker must end with "commit your work on this branch
   with message `campaign/<task>: <summary>`". Uncommitted worktree output is
   invisible to integration.
-- Record every branch/worktree in CAMPAIGN.md's fleet table when you dispatch
-  (task, worker, branch, worktree path, status). With 10+ codex workers out,
-  this table is the only reliable picture of the fleet — `git worktree list`
-  tells you what exists, but nothing about purpose or status.
+- Record every dispatch in CAMPAIGN.md's fleet table (task, worker, branch,
+  worktree path, session id, dispatch time, status). With 10+ codex workers
+  out, this table is the only reliable picture of the fleet — `git worktree
+  list` tells you what exists, but nothing about purpose or status.
 - Remove worktrees (`git worktree remove`) and delete merged branches after
   integration; stale worktrees produce misleading `git status` output later.
 - Record dispatch time and expected duration in the fleet table. A worker
@@ -266,8 +270,8 @@ Rules, each preventing a specific failure:
 - **Depth caps at two.** Conductor → squad lead → codex leaves. A squad lead
   dispatches codex workers only and never spawns another Claude agent; codex
   workers cannot spawn at all. State this in every squad-lead brief, with a
-  hard cap on concurrent leaves. Uncapped depth is how orchestration
-  fork-bombs.
+  hard cap on concurrent leaves. Without both limits, each layer can multiply
+  workers geometrically with no single owner of the result.
 - **Namespaces are exclusive.** The conductor assigns each squad a prefix:
   integration branch `campaign/<squad>`, leaf branches
   `campaign/<squad>/<subtask>`, worktrees `../wt-<squad>-<subtask>`. The
