@@ -72,6 +72,24 @@ flowchart TD
     I --> M[(main)]
 ```
 
+Squads nest the fan-out: each Opus squad lead dispatches its own parallel
+Codex workers, integrates their branches, and hands the conductor one
+verified branch. Tested end to end: a spawned squad lead created worktrees,
+ran its Codex workers concurrently, and every leaf landed its own commit.
+
+```mermaid
+flowchart TD
+    C[Fable conductor] -->|sub-goal briefs| S1[Squad lead · Opus]
+    C --> S2[Squad lead · Opus]
+    S1 --> A1[Codex] & A2[Codex] & A3[Codex]
+    S2 --> B1[Codex] & B2[Codex] & B3[Codex]
+    A1 & A2 & A3 --> I1[campaign/search<br>integration branch]
+    B1 & B2 & B3 --> I2[campaign/billing<br>integration branch]
+    I1 --> V[Conductor merges,<br>re-verifies]
+    I2 --> V
+    V --> M[(main)]
+```
+
 Campaign state lives in the project, so any later session resumes it:
 
 ```
