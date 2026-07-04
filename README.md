@@ -61,16 +61,13 @@ mid-campaign, including a worked worker brief and the report schema.
 ```mermaid
 flowchart TD
     U[User] -->|goals, preferences| C[Claude conductor]
-    C -->|design brief| O[Opus agent<br>UI/UX]
-    C -->|implementation briefs| X1[Codex worker]
-    C --> X2[Codex worker]
-    C --> X3[Codex worker]
-    C -->|sub-goal brief| S[Squad lead: Opus]
-    S --> Y1[Codex leaf]
-    S --> Y2[Codex leaf]
-    S --> Y3[Codex leaf]
-    O & X1 & X2 & X3 -->|branch + report| I[Integrate · review · verify]
-    S -->|integration branch + report| I
+    C -->|design brief| O[Opus agent · UI/UX]
+    C -->|implementation briefs| W[Codex workers · N in parallel]
+    C -->|sub-goal brief| S[Squad lead · Opus]
+    S --> L[Codex leaves · N in parallel]
+    O --> I[Integrate · review · verify]
+    W --> I
+    S -->|integration branch| I
     I --> M[(main)]
 ```
 
@@ -88,11 +85,11 @@ docs/campaign-hq/
 ### How a campaign runs
 
 ```mermaid
-flowchart LR
-    A[Survey and plan] --> B[Dispatch wave:<br>worktree + branch<br>per worker]
-    B --> C[Collect<br>structured reports]
+flowchart TD
+    A[Survey and plan] --> B[Dispatch wave: worktree + branch per worker]
+    B --> C[Collect structured reports]
     C --> D[Integrate branches]
-    D --> E[Verify<br>integrated result]
+    D --> E[Verify integrated result]
     E -->|next wave| B
     E -->|phases done| F[Campaign complete]
 ```
