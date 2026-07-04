@@ -60,7 +60,7 @@ mid-campaign, including a worked worker brief and the report schema.
 ### Orchestration patterns
 
 <p align="center">
-  <img src="assets/patterns.svg" alt="Six orchestration patterns: flat fan-out, route by work, squad, waves, cross-model review, bake-off" width="920">
+  <img src="assets/patterns.svg" alt="Fable as conductor: the whole fleet at once, plus panels for the codex fleet, opus design workers, squads, and worktree integration" width="880">
 </p>
 
 Squads nest the fan-out: each Opus squad lead dispatches its own parallel
