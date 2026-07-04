@@ -100,21 +100,48 @@ to put in the final message. If you can't write that brief, the task isn't
 scoped yet — scope it first.
 
 ```bash
-# run in background Bash, collect out.txt on exit
+# one worker: run in background Bash, collect out.txt on exit
 codex exec --json --skip-git-repo-check -s workspace-write -C <dir> \
   -o /path/to/out-taskname.txt "<self-contained brief>"
 
-# if the user has a second Codex account, fan out across both via CODEX_HOME
+# a wave: N workers, each in its own worktree, all running concurrently.
+# Launch as a single background Bash call; each worker's -o file is its
+# collection point.
+for task in palette highlight ranking budget; do
+  git -C <repo> worktree add "../wt-$task" -b "campaign/$task"
+  codex exec --json --skip-git-repo-check -s workspace-write \
+    -C "<repo>/../wt-$task" -o "/tmp/out-$task.txt" \
+    "$(cat "briefs/$task.md")" &
+done
+wait
+
+# if the user has a second Codex account, split the wave across both
 CODEX_HOME="$HOME/.codex-account2" codex exec --json --skip-git-repo-check \
   -s workspace-write -C <dir> -o /path/to/out-taskname2.txt "<brief>"
 ```
 
+- Each `codex exec` is an independent OS process; the CLI imposes no
+  concurrency ceiling. The practical limits are machine resources and your
+  verification bandwidth when the wave lands. Ten or more concurrent workers
+  is routine for read-only analysis; hold writer waves to the verifiable cap
+  in the waves section below.
+- Write each brief to a file (`briefs/<task>.md`) rather than inlining it in
+  the loop; briefs are reviewable, reusable on retry, and keep the dispatch
+  command short.
 - Sandbox: `read-only` for analysis/review tasks, `workspace-write` for
   implementation. Never `danger-full-access` without the user asking.
 - Subscription-authenticated Codex accounts have no metered per-token cost —
   fan out freely; with multiple accounts, split tasks across them.
 - Size tasks to one sitting (~15–60 min of agent work) with a verifiable
   output. Bigger than that, split it; the orchestrator owns sequencing.
+
+OpenAI also ships a Codex plugin for Claude Code —
+<https://github.com/openai/codex-plugin-cc> — adding `/codex:review`,
+`/codex:adversarial-review`, and background-delegation commands
+(`/codex:rescue`, `/codex:status`, `/codex:result`). Those commands suit
+single interactive tasks the user runs themselves; use the headless `codex
+exec` pattern above for fleet dispatch, where the conductor owns many workers
+at once.
 
 Claude workers (Agent tool or Workflow) accept mid-run steering — use
 SendMessage to redirect a running native agent instead of killing and

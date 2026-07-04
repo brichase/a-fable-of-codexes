@@ -66,6 +66,15 @@ cp -r /tmp/afoc/skills/campaign-conductor ~/.claude/skills/
   ```
 
   Without Codex installed, the skill routes all work to Claude agents.
+- **Codex plugin for Claude Code** (optional) —
+  [github.com/openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc).
+  Adds `/codex:review`, `/codex:adversarial-review`, and background-delegation
+  slash commands for single interactive tasks. Install inside Claude Code:
+
+  ```
+  /plugin marketplace add openai/codex-plugin-cc
+  /plugin install codex@openai-codex
+  ```
 
 ## Validation
 
