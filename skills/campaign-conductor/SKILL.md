@@ -154,6 +154,7 @@ Codex workers carry more than code editing; route these into campaigns:
 | Image generation | prompt the built-in `image_gen` tool | asset generation; the tool saves under `~/.codex/generated_images/<session>/`, so the brief must tell the worker to copy the file into the repo and verify it exists |
 | Review mode | `codex exec review --base <ref>` (read-only) | cross-model review gates; post-integration regression sweeps |
 | Session continuation | `codex exec resume <session-id> "<correction>"` | steering, below |
+| Native subagents | prompt the built-in `multi_agent_v1` tools (`spawn_agent`, `wait_agent`, `send_input`, `close_agent`) | a codex worker fans out its own parallel subagents inside one workspace; see Squads |
 
 Default every worker to the strongest configuration: Claude workers at high
 effort, codex workers at the strongest model and reasoning the user's config
@@ -277,11 +278,19 @@ Anything downstream of a task that might fail waits.
 
 ## Squads: nested delegation
 
-A squad is one Claude subagent (Opus or Sonnet) acting as squad lead: it
-dispatches its own codex workers via `codex exec`, integrates their branches,
-verifies the integrated result, and returns one structured report. The squad
-absorbs the intermediate integration and per-worker diff reads that would
-otherwise land in the conductor's context.
+A squad is one subagent acting as squad lead: it dispatches its own workers,
+integrates, verifies the integrated result, and returns one structured
+report. The squad absorbs the intermediate integration and per-worker diff
+reads that would otherwise land in the conductor's context. Two lead types:
+
+- **Claude lead** (Opus or Sonnet): dispatches codex workers via `codex
+  exec`, one worktree per leaf. Use when the sub-goal needs judgment or
+  mid-flight steering of the squad itself.
+- **Codex lead**: uses its native `multi_agent_v1` tools (`spawn_agent`,
+  `wait_agent`, `send_input`, `close_agent`) to run parallel subagents that
+  share its single workspace. Use for mechanical fan-outs within one
+  worktree (per-file migrations, batch transforms); give the lead one
+  worktree and have its brief assign disjoint files to each subagent.
 
 Dispatch a squad when a phase contains a cohesive sub-goal of **three or more
 codex tasks that must integrate with each other** before the conductor needs
@@ -292,11 +301,14 @@ intermediate integration a squad only adds a report seam.
 
 Rules, each preventing a specific failure:
 
-- **Depth caps at two.** Conductor → squad lead → codex leaves. A squad lead
-  dispatches codex workers only and never spawns another Claude agent; codex
-  workers cannot spawn at all. State this in every squad-lead brief, with a
-  hard cap on concurrent leaves. Without both limits, each layer can multiply
-  workers geometrically with no single owner of the result.
+- **Depth caps at two.** Conductor → squad lead → leaves. A squad lead
+  dispatches leaf workers only and never spawns another lead. Leaf briefs
+  must forbid spawning: codex workers carry native `multi_agent_v1` spawn
+  tools (nested `codex exec` processes are blocked by the sandbox, but the
+  native tools are not), so the rule has to be stated, and a hard cap on
+  concurrent leaves goes in every lead's brief. Without both limits, each
+  layer can multiply workers geometrically with no single owner of the
+  result.
 - **Namespaces are exclusive.** The conductor assigns each squad a prefix:
   integration branch `campaign/<squad>`, leaf branches
   `campaign/<squad>/<subtask>`, worktrees `../wt-<squad>-<subtask>`. The
