@@ -134,9 +134,9 @@ the campaign automatically. Direct it in plain language:
   model_reasoning_effort = "xhigh"
   ```
 
-  Without Codex installed, the skill runs Claude-only fleets: Opus and
-  Sonnet workers take the implementation role with the same briefs,
-  worktrees, squads, and reports.
+  Without Codex installed, the skill runs Claude-only fleets: Sonnet workers
+  take the implementation role, Opus keeps design and squad-lead duty, and
+  the briefs, worktrees, squads, and reports stay the same.
 - **Codex plugin for Claude Code** (optional,
   [github.com/openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc)).
   Adds `/codex:review`, `/codex:adversarial-review`, and background-delegation

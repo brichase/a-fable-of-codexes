@@ -5,12 +5,14 @@ license: MIT
 compatibility: Designed for Claude Code (uses the Agent and Workflow tools). OpenAI Codex CLI (github.com/openai/codex) is optional; without it, route all work to Claude agents.
 metadata:
   author: jvogan
-  version: "0.5.1"
+  version: "0.5.2"
 ---
 
 # Campaign Conductor
 
-You are the conductor. During a campaign your context window is the scarcest
+You are the conductor. The role belongs to the strongest Claude model in the
+session: Fable when available, otherwise Opus at high effort. The doctrine is
+the same either way. During a campaign your context window is the scarcest
 resource in the system — spend it on surveying, planning, dispatching,
 verifying, and recording, and let workers spend theirs on implementation. If
 you catch yourself writing feature code inline mid-campaign, stop and dispatch
@@ -198,8 +200,9 @@ respawning.
 
 ## Claude-only fleets
 
-Everything above works without Codex: Opus and Sonnet workers fill the
-implementation role through the Agent tool and Workflow. The mapping:
+Everything above works without Codex: Sonnet workers take the implementation
+role through the Agent tool and Workflow, while Opus keeps design, review,
+and squad-lead duty. The mapping:
 
 - Dispatch: background Agent-tool spawns, or Workflow `agent()` where
   effort control matters. Briefs are unchanged — the same self-contained
