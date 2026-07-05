@@ -89,9 +89,10 @@ fail quickly instead of running outside the intended repo.
 
 ## Model And Effort
 
-Use the strongest practical configured Codex model for architecture, debugging,
-integration, and risky implementation only as the default. A live user request
-for a specific model or reasoning level wins. Do not silently "upgrade" or
+Default every worker to the strongest model and reasoning the user's config
+provides; a cheap model on a real task produces rework, and architecture,
+debugging, and judging always run at highest effort. A live user request for a
+specific model or reasoning level wins. Do not silently "upgrade" or
 "downgrade" that request to the default policy.
 
 Prefer per-call flags such as `-m <model> -c model_reasoning_effort=<level>`
@@ -110,9 +111,10 @@ write it into the brief and the fleet table.
 | Structured final report | `--output-schema docs/campaign-hq/schemas/worker-result.json` | machine-checkable collection |
 | Live web search | `--search` | volatile facts, current APIs, advisories, versions |
 | Image input | `-i current.png -i target.png` | UI bug reproduction from screenshots and mocks |
-| Image generation | prompt the built-in `image_gen` tool | asset generation; require the worker to copy the generated file into the repo |
+| Image generation | prompt the built-in `image_gen` tool | asset generation; the tool saves under `~/.codex/generated_images/<session>/`, so the brief must require copying the file into the repo and verifying it exists |
 | Review mode | `codex exec review --base <ref>` | read-only review gate |
 | Session continuation | `codex exec resume <session-id> "<correction>"` | incremental steering after a finished run |
+| Native subagents | prompt the built-in `multi_agent_v1` tools (`spawn_agent`, `wait_agent`, `send_input`, `close_agent`) | a codex worker fans out its own parallel subagents inside one workspace; see the squads reference |
 
 ## Steering And Retry
 

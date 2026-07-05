@@ -9,10 +9,10 @@
 [![license](https://img.shields.io/badge/license-MIT-blue?labelColor=333)](LICENSE)
 
 Claude Code skills that make Claude (Fable, or Opus when Fable is unavailable)
-the conductor of an AI worker fleet. The expensive Claude session handles
-surveying, planning, integration judgment, verification, and memory while
-delegating implementation, tests, research, and mechanical refactors to Codex
-CLI or Claude worker agents.
+the conductor of an AI worker fleet. The conductor surveys and plans,
+dispatches many parallel OpenAI Codex CLI workers for implementation and
+Claude Opus agents for design judgment, then integrates, reviews, and verifies
+what comes back.
 
 ## Skills
 
@@ -67,15 +67,19 @@ mid-campaign, including a worked worker brief and the report schema.
   <img src="assets/patterns.svg" alt="Fable as conductor: the whole fleet at once, plus panels for the codex fleet, opus design workers, squads, and worktree integration" width="880">
 </p>
 
-Squads nest the fan-out: each Opus squad lead dispatches its own parallel
-Codex workers, integrates their branches, and hands the conductor one
-verified branch. Tested end to end: a spawned squad lead created worktrees,
-ran its Codex workers concurrently, and every leaf landed its own commit.
+The panels are worked examples. Any capable worker can lead, integrate, or
+review, and a campaign composes whatever shape the work needs.
+
+Squads nest the fan-out: a squad lead (Opus or Codex) dispatches its own
+parallel workers, integrates their branches, and hands the conductor one
+verified branch. Tested end to end both ways: a spawned Opus lead ran Codex
+workers in parallel worktrees, each landing its own commit, and a Codex lead
+fanned out its native subagents inside one workspace.
 
 ```mermaid
 flowchart TD
     C[Fable conductor] -->|sub-goal briefs| S1[Squad lead · Opus]
-    C --> S2[Squad lead · Opus]
+    C --> S2[Squad lead · Codex]
     S1 --> A1[Codex] & A2[Codex] & A3[Codex]
     S2 --> B1[Codex] & B2[Codex] & B3[Codex]
     A1 & A2 & A3 --> I1[campaign/search<br>integration branch]
@@ -130,9 +134,14 @@ the campaign automatically. Direct it in plain language:
 - **OpenAI Codex CLI** ([github.com/openai/codex](https://github.com/openai/codex)).
   Install with `npm install -g @openai/codex` (or `brew install codex`), then
   run `codex login`. ChatGPT-plan auth consumes plan usage and limits vary by
-  plan; API-key auth is token-priced. Size worker waves to the user's available
-  limits and spend tolerance. Configure model and reasoning effort globally or
-  per dispatch when the project needs it.
+  plan; API-key auth is token-priced. Size worker waves to your available
+  limits and spend tolerance. Set the default worker model and reasoning
+  effort in `~/.codex/config.toml`, for example:
+
+  ```toml
+  model = "gpt-5.5"
+  model_reasoning_effort = "xhigh"
+  ```
 
   Without Codex installed, the skill runs Claude-only fleets: Sonnet workers
   take the implementation role, Opus keeps design and squad-lead duty, and

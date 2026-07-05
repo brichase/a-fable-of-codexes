@@ -1,26 +1,29 @@
 ---
 name: campaign-conductor
 description: >-
-  Fable/Opus campaign orchestration for Claude Code: use the expensive Claude
-  session as conductor while delegating implementation, tests, research, and
-  mechanical refactors to lower-cost or higher-throughput workers such as Codex
-  CLI and Claude worker agents. Use only when the user explicitly asks to start
-  or resume a campaign, use campaign mode, have Fable/Claude orchestrate a repo,
-  run a worker fleet, or turn a multi-task repo plan into parallel delegated
-  work.
+  Run a project as an orchestrated campaign: Claude as conductor (Fable, or
+  Opus when Fable is unavailable) dispatching a mixed fleet of workers, Claude
+  Opus agents for UI/UX and design judgment, OpenAI Codex CLI workers for
+  implementation and everything else. Use whenever the user says "start a
+  campaign", "campaign mode", "orchestrate this", "use the fleet", "mix of
+  agents", "send out workers", "codex workers", or asks Claude to run a
+  multi-task project by delegating to parallel agents rather than implementing
+  directly. Also use when resuming work in a repo whose CLAUDE.md points at a
+  campaign-hq folder.
 license: MIT
 compatibility: Designed for Claude Code with Fable or Opus as conductor. OpenAI Codex CLI is optional; without it, route implementation work to Claude workers.
 metadata:
   author: jvogan
-  version: "0.6.0"
+  version: "0.6.1"
 ---
 
 # Campaign Conductor
 
-You are the conductor. Keep the strongest Claude model (Fable when available,
-otherwise Opus at high effort) focused on surveying, planning, dispatching,
-integration judgment, verification, and memory. Delegate implementation and
-mechanical work to cheaper or higher-throughput workers. If you start writing
+You are the conductor. The role belongs to the strongest Claude model in the
+session: Fable when available, otherwise Opus at high effort. During a
+campaign your context window is the scarcest resource in the system: spend it
+on surveying, planning, dispatching, integration judgment, verification, and
+memory, and let workers spend theirs on implementation. If you start writing
 feature code during a campaign, stop and dispatch it unless the change is a
 tiny unblocker.
 
@@ -108,7 +111,7 @@ closest available policy.
 | Work | Default worker | Notes |
 |---|---|---|
 | Planning, architecture synthesis, integration judgment, final review | Fable/Opus conductor | Keep this in the main session unless parallel survey helps. |
-| UI/UX, visual design, design review, frontend polish | Claude Opus, high effort | Use Workflow `agent()` when per-agent effort control is available; otherwise do not claim per-worker effort control. |
+| UI/UX, visual design, design review, frontend polish | Claude Opus, high effort | Workflow `agent()` accepts a per-agent `effort` parameter (this skill counts as the Workflow opt-in); the Agent tool inherits the session's effort. |
 | Implementation, refactors, tests, scripts, debugging | Codex CLI | Read [Codex dispatch](references/codex-dispatch.md) before dispatching. |
 | Quick code search and repo surveys | Read-only Claude/Codex workers | Use read-only tools and require file/line evidence. |
 | Codex unavailable or rate-limited | Claude worker agents | Keep the same briefs, worktree isolation, report schema, and verification gates. |
@@ -124,6 +127,9 @@ closest available policy.
   invisible to integration.
 - Record each active dispatch in the `CAMPAIGN.md` fleet table: task, worker,
   branch, worktree, session id, dispatch time, expected duration, status.
+- Claude workers: `isolation: 'worktree'` gives a writer its own worktree and
+  branch without manual setup, and SendMessage steers a running agent instead
+  of respawning it.
 - Use squads only for cohesive sub-goals where three or more leaf tasks must
   integrate before the conductor needs the result. See [Squads](references/squads.md).
 

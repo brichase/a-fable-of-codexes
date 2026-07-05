@@ -52,7 +52,10 @@
     <line x1="878" y1="540" x2="945" y2="540" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#a)"/>
     <line x1="876" y1="547" x2="945" y2="574" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#a)"/>
     <!-- convergence to integrator and main -->
-    <line x1="418" y1="288" x2="1054" y2="326" stroke="#c9c2b6" stroke-width="1.5"/>
+    <line x1="418" y1="203" x2="1055" y2="321" stroke="#c9c2b6" stroke-width="1.5"/>
+    <line x1="418" y1="281" x2="1055" y2="326" stroke="#c9c2b6" stroke-width="1.5"/>
+    <line x1="418" y1="358" x2="1055" y2="331" stroke="#c9c2b6" stroke-width="1.5"/>
+    <line x1="418" y1="436" x2="1055" y2="336" stroke="#c9c2b6" stroke-width="1.5"/>
     <line x1="660" y1="146" x2="1056" y2="320" stroke="#c9c2b6" stroke-width="1.5"/>
     <line x1="660" y1="514" x2="1056" y2="340" stroke="#c9c2b6" stroke-width="1.5"/>
     <line x1="974" y1="128" x2="1058" y2="314" stroke="#c9c2b6" stroke-width="1.5"/>

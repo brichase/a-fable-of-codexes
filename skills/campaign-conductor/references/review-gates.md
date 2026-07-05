@@ -63,6 +63,10 @@ Author and reviewer must be separate.
 High-risk means auth, permissions, billing, data migration, shared state,
 security boundaries, persistent storage, or broad refactors.
 
+Without a second model available, substitute a fresh reviewer agent that did
+not author the diff. Weaker than a different model, still far better than
+self-review. Author and reviewer stay separate in every gate.
+
 ## Bake-Offs
 
 For a high-stakes task with uncertain solution shape, dispatch the same brief to
@@ -99,6 +103,9 @@ Keep `LEARNINGS.md` cheap to read:
   lessons and delete stale raw entries.
 - Put routing preferences in `preferences.md`, not `LEARNINGS.md`.
 - Overwrite stale preferences instead of appending history.
+- A lesson that holds for any project belongs in the skill itself: offer to
+  fold it into the user's installed copy, tightening existing text rather than
+  appending.
 
 ## Pause Or Stop
 
