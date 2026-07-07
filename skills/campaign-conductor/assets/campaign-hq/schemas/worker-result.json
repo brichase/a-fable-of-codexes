@@ -4,7 +4,7 @@
   "type": "object",
   "required": ["status", "branch", "commit", "files_changed", "verify_cmd", "verify_result", "live_smoke", "blockers"],
   "properties": {
-    "status": { "enum": ["done", "partial", "blocked", "failed"] },
+    "status": { "enum": ["done", "awaiting-field-test", "partial", "blocked", "failed"] },
     "branch": { "type": "string" },
     "commit": { "type": "string", "description": "sha of the final commit; empty if none" },
     "files_changed": { "type": "array", "items": { "type": "string" } },

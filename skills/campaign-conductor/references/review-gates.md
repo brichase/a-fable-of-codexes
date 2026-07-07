@@ -34,7 +34,7 @@ Claude workers should end with a fenced JSON block matching the same schema.
   "type": "object",
   "required": ["status", "branch", "commit", "files_changed", "verify_cmd", "verify_result", "live_smoke", "blockers"],
   "properties": {
-    "status": { "enum": ["done", "partial", "blocked", "failed"] },
+    "status": { "enum": ["done", "awaiting-field-test", "partial", "blocked", "failed"] },
     "branch": { "type": "string" },
     "commit": { "type": "string", "description": "sha of the final commit; empty if none" },
     "files_changed": { "type": "array", "items": { "type": "string" } },
@@ -106,6 +106,24 @@ After every worker return:
 
 Re-verify after each merge to the campaign main line and after each squad hands
 back an integration branch.
+
+## Field Tests
+
+Some surfaces cannot be exercised by any agent: browser extensions, mobile
+apps, headed-browser flows, hardware, anything gated on the user's accounts or
+devices. These fail at first user contact if treated as done.
+
+- A worker on such a surface reports `awaiting-field-test`, never `done`, and
+  must deliver a field-test script: numbered steps, the expected observation at
+  each step, and failure diagnostics surfaced visibly in the artifact itself
+  (a popup, a status line), not only in logs the user will never open.
+- The conductor keeps a `Field-test queue` section in `CAMPAIGN.md` so the user
+  runs the pending tests in one batch instead of being interrupted per task.
+- A queued field test must not silently gate dependent work: route around it or
+  flag the dependency to the user at the next check-in.
+- Only the user's reported observation moves the task to done. Record what the
+  first field test teaches in `LEARNINGS.md`; it is usually the highest-signal
+  feedback in the campaign.
 
 ## Campaign Memory
 

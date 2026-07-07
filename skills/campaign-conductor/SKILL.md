@@ -151,7 +151,10 @@ The conductor owns correctness:
   resolution policy.
 - Use cross-model review for high-risk diffs and after wave integration. See
   [Review gates](references/review-gates.md).
-- Update `CAMPAIGN.md` task status as work lands.
+- Update `CAMPAIGN.md` task status as work lands. Surfaces only the user can
+  exercise (extensions, mobile, headed browsers) are `awaiting-field-test`, not
+  done: queue them in a `Field-test queue` section with the worker's field-test
+  script so the user tests in one batch. See [Review gates](references/review-gates.md).
 - Log durable lessons in `LEARNINGS.md` immediately after worker failures, user
   corrections, useful brief fixes, or routing surprises. Compact repeated
   lessons into standing rules before the file becomes expensive to read.
