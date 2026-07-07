@@ -140,6 +140,26 @@ closest available policy.
 - Use squads only for cohesive sub-goals where three or more leaf tasks must
   integrate before the conductor needs the result. See [Squads](references/squads.md).
 
+## Unattended Runs
+
+When the user grants a block of unattended time ("run overnight", "I'm away
+until 8am"), the fleet keeps working but nothing self-promotes to the mainline:
+
+- Preflight before the user leaves: a done-command per queued task, credentials
+  and data staged, guardrails stated explicitly (what must never happen: push,
+  deploy, rebuild shared services), and which decisions may be made without
+  them versus parked.
+- Integrate overnight work on a dedicated integration branch
+  (`campaign/overnight-<date>`), never the campaign mainline.
+- When the user returns, run a promotion review before merging to mainline:
+  cross-model review of the integrated diff, the live-smoke sweep for every
+  task in the wave, then merge.
+- Open with a morning report in four buckets: merged and live-verified /
+  awaiting field test / blocked and parked / the one decision needed first.
+
+The autonomy grant covers doing the work, not adjudicating it. Overnight "done"
+is a claim; the promotion review is where it becomes true.
+
 ## Collect, Verify, Record
 
 The conductor owns correctness:
