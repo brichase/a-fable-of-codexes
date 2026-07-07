@@ -13,6 +13,8 @@ Every worker report must include:
 - `files_changed`
 - `verify_cmd`
 - `verify_result` with `passed` and `output_tail`
+- `live_smoke` with `cmd`, `expected`, `observed`, and `passed` (null only when
+  the task has no exercisable surface)
 - `blockers`
 
 Codex workers should use:
@@ -30,7 +32,7 @@ Claude workers should end with a fenced JSON block matching the same schema.
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "worker-result",
   "type": "object",
-  "required": ["status", "branch", "commit", "files_changed", "verify_cmd", "verify_result", "blockers"],
+  "required": ["status", "branch", "commit", "files_changed", "verify_cmd", "verify_result", "live_smoke", "blockers"],
   "properties": {
     "status": { "enum": ["done", "partial", "blocked", "failed"] },
     "branch": { "type": "string" },
@@ -44,6 +46,18 @@ Claude workers should end with a fenced JSON block matching the same schema.
         "passed": { "type": "boolean" },
         "output_tail": { "type": "string" }
       }
+    },
+    "live_smoke": {
+      "type": ["object", "null"],
+      "description": "How the built artifact was exercised end-to-end against real data; null only if the task has no exercisable surface",
+      "required": ["cmd", "expected", "observed", "passed"],
+      "properties": {
+        "cmd": { "type": "string" },
+        "expected": { "type": "string" },
+        "observed": { "type": "string" },
+        "passed": { "type": "boolean" }
+      },
+      "additionalProperties": false
     },
     "blockers": { "type": "array", "items": { "type": "string" } }
   },
@@ -83,8 +97,12 @@ After every worker return:
 1. Parse the report.
 2. Inspect the commit and diff.
 3. Rerun the verification command from the brief.
-4. Update `CAMPAIGN.md`.
-5. Record a durable lesson in `LEARNINGS.md` when the result teaches something.
+4. Run the brief's live smoke against real data and compare the observed result
+   to the expected one. Zero counts, empty output, and silent no-ops are
+   failures until explained — green tests routinely mask integration-seam bugs
+   that only a live run exposes.
+5. Update `CAMPAIGN.md`.
+6. Record a durable lesson in `LEARNINGS.md` when the result teaches something.
 
 Re-verify after each merge to the campaign main line and after each squad hands
 back an integration branch.

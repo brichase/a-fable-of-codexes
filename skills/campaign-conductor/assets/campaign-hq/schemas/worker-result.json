@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "worker-result",
   "type": "object",
-  "required": ["status", "branch", "commit", "files_changed", "verify_cmd", "verify_result", "blockers"],
+  "required": ["status", "branch", "commit", "files_changed", "verify_cmd", "verify_result", "live_smoke", "blockers"],
   "properties": {
     "status": { "enum": ["done", "partial", "blocked", "failed"] },
     "branch": { "type": "string" },
@@ -16,6 +16,18 @@
         "passed": { "type": "boolean" },
         "output_tail": { "type": "string" }
       }
+    },
+    "live_smoke": {
+      "type": ["object", "null"],
+      "description": "How the built artifact was exercised end-to-end against real data; null only if the task has no exercisable surface",
+      "required": ["cmd", "expected", "observed", "passed"],
+      "properties": {
+        "cmd": { "type": "string" },
+        "expected": { "type": "string" },
+        "observed": { "type": "string" },
+        "passed": { "type": "boolean" }
+      },
+      "additionalProperties": false
     },
     "blockers": { "type": "array", "items": { "type": "string" } }
   },

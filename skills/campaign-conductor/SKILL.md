@@ -92,8 +92,9 @@ Auto-size the campaign:
   into `CAMPAIGN.md` and get user sign-off before writer waves.
 
 Use phases shaped as `dispatch -> collect -> integrate -> verify -> next wave`.
-Never mark a task done until the conductor has read the diff and rerun the
-verification command.
+Never mark a task done until the conductor has read the diff, rerun the
+verification command, and run the task's live smoke (see below). Tests passing
+is not evidence the artifact works; only exercising it is.
 
 ## Worker Routing
 
@@ -121,6 +122,11 @@ closest available policy.
 - Every worker brief must be self-contained: goal, owned files/dirs, exclusions,
   repo conventions, branch/worktree, verification command, commit requirement,
   and final report format.
+- Any brief that adds or changes a user-facing or integration surface must name
+  a `live_smoke`: the exact command or interaction that exercises the built
+  artifact against real data, plus the expected observable result. The conductor
+  reruns it after merge. A zero count, empty output, or silent no-op from a live
+  smoke is a failure until explained.
 - One writer per tree. Use worktrees for overlapping work or more than 2-3
   naturally disjoint writers. See [Fleet operations](references/fleet-operations.md).
 - Every writer branch must end with a commit. Uncommitted worker output is
