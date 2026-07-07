@@ -14,7 +14,7 @@ license: MIT
 compatibility: Designed for Claude Code with Fable or Opus as conductor. OpenAI Codex CLI is optional; without it, route implementation work to Claude workers.
 metadata:
   author: jvogan
-  version: "0.6.1"
+  version: "0.7.0"
 ---
 
 # Campaign Conductor
@@ -136,7 +136,10 @@ closest available policy.
   duration while the worker runs).
 - Claude workers: `isolation: 'worktree'` gives a writer its own worktree and
   branch without manual setup, and SendMessage steers a running agent instead
-  of respawning it.
+  of respawning it. Claude worker briefs should instruct the worker to run the
+  built-in `verify` skill before reporting done, and to fill `live_smoke` from
+  what it observed. Codex workers cannot; for them the conductor owns the live
+  smoke.
 - Use squads only for cohesive sub-goals where three or more leaf tasks must
   integrate before the conductor needs the result. See [Squads](references/squads.md).
 
